@@ -6,6 +6,7 @@
 #4 spaces!
 #4 spaces!
 #4 spaces!
+#Johnny Chess is here!!!!
 
 import pygame
 pygame.init()
@@ -134,13 +135,13 @@ def redrawGameWindow():
     pygame.display.update()
 
 
-#mainloop
+
 man = player(300,410,64,64)
 goblin = enemy(100,410,64,64,450)
 #this will contain a list of all of our bullets
 bullets = []
 
-
+# main loop
 run = True
 while run:
     clock.tick(27)
