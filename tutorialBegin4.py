@@ -2,7 +2,7 @@
 # in pygame sound effects need to be .wav but music can be .wav or .mp3
 #4 spaces!
 #4 spaces!
-#4 spaces!
+#4 spaces!jsfsfsfsfsfsfsf
 #4 spaces!
 #4 spaces!
 #4 spaces!
@@ -13,6 +13,9 @@
 import pygame
 pygame.init()
 
+a = pygame.image.load('small_image.png')
+pygame.display.set_icon(a)
+
 win = pygame.display.set_mode((500,480))
 
 pygame.display.set_caption("First Game")
@@ -21,6 +24,8 @@ walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.im
 walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'), pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'), pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
 bg = pygame.image.load('bg.jpg')
 char = pygame.image.load('standing.png')
+
+
 
 clock = pygame.time.Clock()
 
@@ -58,15 +63,17 @@ class player (object):
                 win.blit(walkRight[self.walkCount//3], (self.x,self.y))
                 self.walkCount +=1
         else:
-            if self.right:
-                win.blit(walkRight[0], (self.x, self.y))
-            else:
+            if self.left:
                 win.blit(walkLeft[0], (self.x, self.y))
+            else:
+                win.blit(walkRight[0], (self.x, self.y))
         self.hitbox = (self.x + 17, self.y + 11, 29, 52)
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
                 #win.blit(char, (self.x,self.y))
     
     def hit(self):
+        self.isJump = False
+        self.jumpCount = 10
         self.x = 60
         self.y = 410
         self.walkCount = 0
@@ -130,7 +137,7 @@ class enemy(object):
                 self.walkCount += 1
             pygame.draw.rect(win, (255,0,0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10))
             pygame.draw.rect(win, (0,135,0), (self.hitbox[0], self.hitbox[1] - 20, 50 - ((5)*(10 - self.health)), 10))
-
+        
         self.hitbox = (self.x + 17, self.y + 2, 31, 57)
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
 	
@@ -148,6 +155,9 @@ class enemy(object):
             else:
                 self.vel = self.vel * -1
                 self.walkCount = 0
+        if self.visible == False:
+            self.x = 10
+            self.y = 10
         
     def hit(self):
         if self.health > 0:
@@ -173,9 +183,11 @@ class enemy(object):
 def redrawGameWindow():
     win.blit(bg, (0,0))
     text = font.render('Score: ' + str(score), 1, (0,0,0))
-    win.blit(text, (390, 10))
+    win.blit(text, (100, 10))
     man.draw(win)
+    
     goblin.draw(win)
+    
     for bullet in bullets:
         bullet.draw(win)
     pygame.display.update()
@@ -196,11 +208,11 @@ bullets = []
 run = True
 while run:
     clock.tick(27)
-    
-    if man.hitbox[1]  < goblin.hitbox[1] + goblin.hitbox[3] and man.hitbox[1]+ man.hitbox[3] > goblin.hitbox[1]:
-        if man.hitbox[0] + man.hitbox[2] > goblin.hitbox[0] and man.hitbox[0] < goblin.hitbox[0] + goblin.hitbox[2]:
-            man.hit()
-            score -= 5
+    if goblin.visible == True:
+        if man.hitbox[1]  < goblin.hitbox[1] + goblin.hitbox[3] and man.hitbox[1]+ man.hitbox[3] > goblin.hitbox[1]:
+            if man.hitbox[0] + man.hitbox[2] > goblin.hitbox[0] and man.hitbox[0] < goblin.hitbox[0] + goblin.hitbox[2]:
+                man.hit()
+                score -= 5
             
     if shootLoop > 0:
         shootLoop += 1
@@ -214,9 +226,13 @@ while run:
     for bullet in bullets:
         if bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]:
             if bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:
-                goblin.hit()
-                hitSound.play()
-                score += 1
+                if goblin.visible == True:
+                    goblin.hit()
+                    hitSound.play()
+                
+                    score += 1
+                else:
+                    goblin.draw(win)
                 bullets.pop(bullets.index(bullet))
 				
         if bullet.x < 500 and bullet.x > 0:
@@ -253,8 +269,8 @@ while run:
     if not(man.isJump):
         if keys[pygame.K_UP]:
             man.isJump = True
-            man.right = False
-            man.left = False
+            #man.right = False
+            #man.left = False
             man.walkCount = 0
     else:
         if man.jumpCount >= -10:
