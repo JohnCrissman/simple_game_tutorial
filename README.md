@@ -1,2 +1,3 @@
 # simple_game_tutorial
-tutorial from Tech with Tim
+
+Pygame is needed to make games like this.  Thanks Tech_with_Tim for helping me with this.
